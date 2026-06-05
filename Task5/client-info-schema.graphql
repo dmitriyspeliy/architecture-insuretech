@@ -1,0 +1,92 @@
+"""
+GraphQL-схема сервиса client-info.
+Схема покрывает существующие REST-операции:
+- GET /clients/{id}
+- GET /clients/{id}/documents
+- GET /clients/{id}/relatives
+"""
+schema {
+  query: Query
+}
+
+"""
+Корневые запросы GraphQL API client-info.
+"""
+type Query {
+  """
+  Получить карточку клиента по ID.
+  Потребитель сам выбирает необходимые поля клиента и вложенные объекты.
+  """
+  client(id: ID!): Client
+
+  """
+  Получить документы клиента по ID клиента.
+  Эквивалент REST-метода GET /clients/{id}/documents.
+  """
+  clientDocuments(clientId: ID!): [Document!]!
+
+  """
+  Получить родственников клиента по ID клиента.
+  Эквивалент REST-метода GET /clients/{id}/relatives.
+  """
+  clientRelatives(clientId: ID!): [Relative!]!
+}
+
+"""
+Клиент.
+В GraphQL вложенные поля documents и relatives позволяют получить связанные данные одним запросом,
+без серии REST-вызовов к отдельным ресурсам.
+"""
+type Client {
+  """Идентификатор клиента."""
+  id: ID!
+
+  """ФИО или отображаемое имя клиента."""
+  name: String
+
+  """Возраст клиента."""
+  age: Int
+
+  """Документы клиента."""
+  documents: [Document!]!
+
+  """Родственники клиента."""
+  relatives: [Relative!]!
+}
+
+"""
+Документ клиента.
+"""
+type Document {
+  """Идентификатор документа."""
+  id: ID!
+
+  """Тип документа: паспорт, водительское удостоверение и т.п."""
+  type: String
+
+  """Номер документа."""
+  number: String
+
+  """Дата выдачи документа."""
+  issueDate: String
+
+  """Дата окончания действия документа."""
+  expiryDate: String
+}
+
+"""
+Родственник клиента.
+"""
+type Relative {
+  """Идентификатор записи о родственнике."""
+  id: ID!
+
+  """Тип родственной связи."""
+  relationType: String
+
+  """ФИО или отображаемое имя родственника."""
+  name: String
+
+  """Возраст родственника."""
+  age: Int
+}

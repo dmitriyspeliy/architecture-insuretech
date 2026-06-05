@@ -1,0 +1,172 @@
+<mxfile host="drawio-plugin" modified="2026-06-05T04:28:50.830Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36" version="22.1.22" etag="a-4xq5gIOrc2r8iqQWvP" type="embed">
+  <diagram id="task4-osago-event-driven" name="Task4 OSAGO Event-Driven">
+    <mxGraphModel dx="462" dy="1594" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1850" pageHeight="1050" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="boundary" value="&lt;b&gt;InsureTech: контейнерная схема ОСАГО / Event-Driven&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;arcSize=20;fillColor=none;strokeColor=#666666;fontColor=#333333;align=left;verticalAlign=top;fontSize=14;spacing=10;" parent="1" vertex="1">
+          <mxGeometry x="70" y="-90" width="1720" height="940" as="geometry" />
+        </mxCell>
+        <mxCell id="client" value="&lt;b&gt;Клиент&lt;/b&gt;&lt;br/&gt;[Person]" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#083F75;strokeColor=#06315C;fontColor=#ffffff;align=center;verticalAlign=middle;fontSize=12;arcSize=10;" parent="1" vertex="1">
+          <mxGeometry x="80" y="90" width="180" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="web" value="&lt;b&gt;InsureTech Web&lt;/b&gt;&lt;br/&gt;[React]&lt;br/&gt;&lt;br/&gt;Форма ОСАГО, отображение предложений по мере поступления" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#23A2D9;strokeColor=#0E7DAD;fontColor=#ffffff;align=center;verticalAlign=middle;fontSize=12;arcSize=10;" parent="1" vertex="1">
+          <mxGeometry x="80" y="220" width="230" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="core" value="&lt;b&gt;core-app&lt;/b&gt;&lt;br/&gt;[Kotlin, Spring Boot]&lt;br/&gt;&lt;br/&gt;Оформление ОСАГО, REST API для создания заявки, SSE stream предложений" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#23A2D9;strokeColor=#0E7DAD;fontColor=#ffffff;align=center;verticalAlign=middle;fontSize=12;arcSize=10;" parent="1" vertex="1">
+          <mxGeometry x="430" y="220" width="260" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="coredb" value="&lt;b&gt;core-db&lt;/b&gt;&lt;br/&gt;[PostgreSQL]&lt;br/&gt;&lt;br/&gt;Заявки ОСАГО, офферы, статус расчёта, outbox" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;fillColor=#23A2D9;strokeColor=#0E7DAD;fontColor=#ffffff;align=center;fontSize=12;" parent="1" vertex="1">
+          <mxGeometry x="440" y="470" width="260" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="core_outbox" value="&lt;b&gt;Transactional Outbox&lt;/b&gt;&lt;br/&gt;core-app публикует OsagoApplicationCreated после commit заявки" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontColor=#333333;align=left;verticalAlign=top;fontSize=11;spacing=8;arcSize=8;" parent="1" vertex="1">
+          <mxGeometry x="430" y="650" width="260" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="broker" value="&lt;b&gt;Event Broker&lt;/b&gt;&lt;br/&gt;[Kafka / Event Streaming]&lt;br/&gt;&lt;br/&gt;topics:&lt;br/&gt;osago.application.created&lt;br/&gt;osago.offer.received&lt;br/&gt;osago.quote.completed&lt;br/&gt;osago.quote.timed_out" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#F2C94C;strokeColor=#B58B00;fontColor=#111111;align=center;verticalAlign=middle;fontSize=12;" parent="1" vertex="1">
+          <mxGeometry x="800" y="270" width="260" height="180" as="geometry" />
+        </mxCell>
+        <mxCell id="agg" value="&lt;b&gt;osago-aggregator&lt;/b&gt;&lt;br/&gt;[Kotlin, Spring Boot]&lt;br/&gt;&lt;br/&gt;Принимает события заявок, отправляет заявки в страховые, опрашивает решения до 60 сек." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#23A2D9;strokeColor=#0E7DAD;fontColor=#ffffff;align=center;verticalAlign=middle;fontSize=12;arcSize=10;" parent="1" vertex="1">
+          <mxGeometry x="1180" y="200" width="280" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="aggdb" value="&lt;b&gt;osago-aggregator-db&lt;/b&gt;&lt;br/&gt;[PostgreSQL]&lt;br/&gt;&lt;br/&gt;CorrelationId, insurer request id, статус по каждой СК, дедлайны, попытки polling, outbox" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;fillColor=#23A2D9;strokeColor=#0E7DAD;fontColor=#ffffff;align=center;fontSize=12;" parent="1" vertex="1">
+          <mxGeometry x="1180" y="500" width="280" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="agg_outbox" value="&lt;b&gt;Transactional Outbox&lt;/b&gt;&lt;br/&gt;osago-aggregator публикует каждый полученный оффер и финальный статус надёжно" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontColor=#333333;align=left;verticalAlign=top;fontSize=11;spacing=8;arcSize=8;" parent="1" vertex="1">
+          <mxGeometry x="1180" y="660" width="280" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="insurers" value="&lt;b&gt;Системы страховых компаний&lt;/b&gt;&lt;br/&gt;[REST API]&lt;br/&gt;&lt;br/&gt;1) создать заявку ОСАГО&lt;br/&gt;2) получить предложение по заявке&lt;br/&gt;&lt;br/&gt;Сейчас 5 СК, целевое расширение до 10+" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#8C8496;strokeColor=#736782;fontColor=#ffffff;align=center;verticalAlign=middle;fontSize=12;arcSize=10;" parent="1" vertex="1">
+          <mxGeometry x="1530" y="260" width="210" height="180" as="geometry" />
+        </mxCell>
+        <mxCell id="product" value="&lt;b&gt;ins-product-aggregator&lt;/b&gt;&lt;br/&gt;[Kotlin, Spring Boot]&lt;br/&gt;&lt;br/&gt;Продукты и тарифы через event streaming из Task3" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#23A2D9;strokeColor=#0E7DAD;fontColor=#ffffff;align=center;verticalAlign=middle;fontSize=12;arcSize=10;" parent="1" vertex="1">
+          <mxGeometry x="1180" y="80" width="280" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="settlement" value="&lt;b&gt;ins-comp-settlement&lt;/b&gt;&lt;br/&gt;[Kotlin, Spring Boot]&lt;br/&gt;&lt;br/&gt;Взаиморасчёты, потребляет события оформленных страховок" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#23A2D9;strokeColor=#0E7DAD;fontColor=#ffffff;align=center;verticalAlign=middle;fontSize=12;arcSize=10;" parent="1" vertex="1">
+          <mxGeometry x="1180" y="810" width="280" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="api_note" value="&lt;b&gt;API core-app для Web&lt;/b&gt;&lt;br/&gt;POST /api/osago/applications — создать заявку&lt;br/&gt;GET /api/osago/applications/{id}/offers/stream — SSE-поток предложений&lt;br/&gt;GET /api/osago/applications/{id} — текущее состояние" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontColor=#333333;align=left;verticalAlign=top;fontSize=11;spacing=8;arcSize=8;" parent="1" vertex="1">
+          <mxGeometry x="80" y="390" width="300" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="agg_api_note" value="&lt;b&gt;API osago-aggregator для core-app&lt;/b&gt;&lt;br/&gt;Основной контракт — события в Kafka.&lt;br/&gt;Синхронный REST не используется для расчёта, чтобы не держать запрос до 60 сек.&lt;br/&gt;REST только health/admin при необходимости." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontColor=#333333;align=left;verticalAlign=top;fontSize=11;spacing=8;arcSize=8;" parent="1" vertex="1">
+          <mxGeometry x="800" y="500" width="300" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="legend" value="&lt;b&gt;Паттерны отказоустойчивости&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E6F0FF;strokeColor=#6699CC;fontColor=#333333;align=center;fontSize=12;" parent="1" vertex="1">
+          <mxGeometry x="80" y="650" width="300" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="pat_timeout" value="" style="aspect=fixed;sketch=0;html=1;dashed=0;whitespace=wrap;verticalLabelPosition=bottom;verticalAlign=top;fillColor=#2875E2;strokeColor=#ffffff;shape=mxgraph.kubernetes.icon2;prIcon=quota;" parent="1" vertex="1">
+          <mxGeometry x="100" y="710" width="46" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="pat_timeout_txt" value="Timeout" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;" parent="1" vertex="1">
+          <mxGeometry x="155" y="718" width="130" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="pat_retry" value="" style="aspect=fixed;sketch=0;html=1;dashed=0;whitespace=wrap;verticalLabelPosition=bottom;verticalAlign=top;fillColor=#2875E2;strokeColor=#ffffff;shape=mxgraph.kubernetes.icon2;prIcon=deploy;" parent="1" vertex="1">
+          <mxGeometry x="100" y="770" width="46" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="pat_retry_txt" value="Retry" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;" parent="1" vertex="1">
+          <mxGeometry x="155" y="778" width="130" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="pat_rate" value="" style="aspect=fixed;sketch=0;html=1;dashed=0;whitespace=wrap;verticalLabelPosition=bottom;verticalAlign=top;fillColor=#2875E2;strokeColor=#ffffff;shape=mxgraph.kubernetes.icon2;prIcon=job;" parent="1" vertex="1">
+          <mxGeometry x="100" y="830" width="46" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="pat_rate_txt" value="Rate Limiter" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;" parent="1" vertex="1">
+          <mxGeometry x="155" y="838" width="130" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="pat_cb" value="" style="aspect=fixed;sketch=0;html=1;dashed=0;whitespace=wrap;verticalLabelPosition=bottom;verticalAlign=top;fillColor=#2875E2;strokeColor=#ffffff;shape=mxgraph.kubernetes.icon2;prIcon=c_role;" parent="1" vertex="1">
+          <mxGeometry x="100" y="890" width="46" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="pat_cb_txt" value="Circuit Breaker" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;" parent="1" vertex="1">
+          <mxGeometry x="155" y="898" width="130" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="e_client_web" value="HTTPS" style="endArrow=blockThin;html=1;fontSize=10;fontColor=#404040;strokeWidth=1;endFill=1;strokeColor=#666666;rounded=0;edgeStyle=orthogonalEdgeStyle;" parent="1" source="client" target="web" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_web_core_create" value="REST: создать заявку ОСАГО&lt;br/&gt;Rate Limit + Timeout" style="endArrow=blockThin;html=1;fontSize=10;fontColor=#404040;strokeWidth=1;endFill=1;strokeColor=#666666;rounded=0;edgeStyle=orthogonalEdgeStyle;" parent="1" source="web" target="core" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="350" y="280" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_core_web_sse" value="SSE: предложения приходят сразу&lt;br/&gt;Reconnect/Retry на клиенте" style="endArrow=blockThin;startArrow=blockThin;html=1;fontSize=10;fontColor=#404040;strokeWidth=1;endFill=1;startFill=1;strokeColor=#666666;rounded=0;edgeStyle=orthogonalEdgeStyle;" parent="1" source="core" target="web" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="350" y="330" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_core_db" value="TCP: работа с данными" style="endArrow=blockThin;html=1;fontSize=10;fontColor=#404040;strokeWidth=1;endFill=1;strokeColor=#666666;rounded=0;edgeStyle=orthogonalEdgeStyle;" parent="1" source="core" target="coredb" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_core_broker" value="Publish event:&lt;br/&gt;OsagoApplicationCreated&lt;br/&gt;через Transactional Outbox" style="endArrow=blockThin;html=1;fontSize=10;fontColor=#404040;strokeWidth=1;endFill=1;strokeColor=#666666;rounded=0;edgeStyle=orthogonalEdgeStyle;" parent="1" source="core" target="broker" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_broker_agg" value="Consume command-event:&lt;br/&gt;OsagoApplicationCreated&lt;br/&gt;consumer group osago-aggregator" style="endArrow=blockThin;html=1;fontSize=10;fontColor=#404040;strokeWidth=1;endFill=1;strokeColor=#666666;rounded=0;edgeStyle=orthogonalEdgeStyle;" parent="1" source="broker" target="agg" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_agg_db" value="TCP: состояние расчёта и polling" style="endArrow=blockThin;html=1;fontSize=10;fontColor=#404040;strokeWidth=1;endFill=1;strokeColor=#666666;rounded=0;edgeStyle=orthogonalEdgeStyle;" parent="1" source="agg" target="aggdb" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_agg_ins" value="REST: create application / poll offer&lt;br/&gt;Timeout + Retry + Rate Limiter + Circuit Breaker" style="endArrow=blockThin;html=1;fontSize=10;fontColor=#404040;strokeWidth=1;endFill=1;strokeColor=#666666;rounded=0;edgeStyle=orthogonalEdgeStyle;" parent="1" source="agg" target="insurers" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1500" y="310" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_agg_broker" value="Publish events:&lt;br/&gt;OsagoOfferReceived&lt;br/&gt;OsagoQuoteCompleted / TimedOut&lt;br/&gt;через Transactional Outbox" style="endArrow=blockThin;html=1;fontSize=10;fontColor=#404040;strokeWidth=1;endFill=1;strokeColor=#B58B00;rounded=0;edgeStyle=orthogonalEdgeStyle;dashed=1;" parent="1" source="agg" target="broker" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1120" y="430" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_broker_core" value="Consume events:&lt;br/&gt;OsagoOfferReceived&lt;br/&gt;обновление read-model и push в SSE" style="endArrow=blockThin;html=1;fontSize=10;fontColor=#404040;strokeWidth=1;endFill=1;strokeColor=#B58B00;rounded=0;edgeStyle=orthogonalEdgeStyle;dashed=1;" parent="1" source="broker" target="core" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="760" y="470" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_core_settlement" value="Publish/consume existing events:&lt;br/&gt;InsurancePolicyIssued / Paid / Cancelled" style="endArrow=blockThin;html=1;fontSize=10;fontColor=#404040;strokeWidth=1;endFill=1;strokeColor=#B58B00;rounded=0;edgeStyle=orthogonalEdgeStyle;dashed=1;" parent="1" source="core" target="settlement" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="760" y="820" />
+              <mxPoint x="1120" y="860" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_product_broker" value="ProductCatalogUpdated / ProductTariffUpdated" style="endArrow=blockThin;html=1;fontSize=10;fontColor=#404040;strokeWidth=1;endFill=1;strokeColor=#B58B00;rounded=0;edgeStyle=orthogonalEdgeStyle;dashed=1;" parent="1" source="product" target="broker" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1030" y="130" />
+              <mxPoint x="1030" y="230" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m_rate_web" value="" style="aspect=fixed;sketch=0;html=1;dashed=0;whitespace=wrap;verticalLabelPosition=bottom;verticalAlign=top;fillColor=#2875E2;strokeColor=#ffffff;shape=mxgraph.kubernetes.icon2;prIcon=job;" parent="1" vertex="1">
+          <mxGeometry x="330" y="230" width="34" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="m_timeout_web" value="" style="aspect=fixed;sketch=0;html=1;dashed=0;whitespace=wrap;verticalLabelPosition=bottom;verticalAlign=top;fillColor=#2875E2;strokeColor=#ffffff;shape=mxgraph.kubernetes.icon2;prIcon=quota;" parent="1" vertex="1">
+          <mxGeometry x="370" y="230" width="34" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="m_retry_sse" value="" style="aspect=fixed;sketch=0;html=1;dashed=0;whitespace=wrap;verticalLabelPosition=bottom;verticalAlign=top;fillColor=#2875E2;strokeColor=#ffffff;shape=mxgraph.kubernetes.icon2;prIcon=deploy;" parent="1" vertex="1">
+          <mxGeometry x="330" y="350" width="34" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="m_timeout_ins" value="" style="aspect=fixed;sketch=0;html=1;dashed=0;whitespace=wrap;verticalLabelPosition=bottom;verticalAlign=top;fillColor=#2875E2;strokeColor=#ffffff;shape=mxgraph.kubernetes.icon2;prIcon=quota;" parent="1" vertex="1">
+          <mxGeometry x="1480" y="220" width="34" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="m_retry_ins" value="" style="aspect=fixed;sketch=0;html=1;dashed=0;whitespace=wrap;verticalLabelPosition=bottom;verticalAlign=top;fillColor=#2875E2;strokeColor=#ffffff;shape=mxgraph.kubernetes.icon2;prIcon=deploy;" parent="1" vertex="1">
+          <mxGeometry x="1520" y="220" width="34" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="m_rate_ins" value="" style="aspect=fixed;sketch=0;html=1;dashed=0;whitespace=wrap;verticalLabelPosition=bottom;verticalAlign=top;fillColor=#2875E2;strokeColor=#ffffff;shape=mxgraph.kubernetes.icon2;prIcon=job;" parent="1" vertex="1">
+          <mxGeometry x="1560" y="220" width="34" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="m_cb_ins" value="" style="aspect=fixed;sketch=0;html=1;dashed=0;whitespace=wrap;verticalLabelPosition=bottom;verticalAlign=top;fillColor=#2875E2;strokeColor=#ffffff;shape=mxgraph.kubernetes.icon2;prIcon=c_role;" parent="1" vertex="1">
+          <mxGeometry x="1600" y="220" width="34" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="scale_note" value="&lt;b&gt;Масштабирование экземпляров&lt;/b&gt;&lt;br/&gt;core-app и osago-aggregator могут работать в нескольких репликах.&lt;br/&gt;osago-aggregator использует consumer group, idempotency key, correlationId и БД для координации polling-задач.&lt;br/&gt;Один ответ СК публикуется отдельным событием, поэтому UI получает предложения постепенно." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontColor=#333333;align=left;verticalAlign=top;fontSize=11;spacing=8;arcSize=8;" parent="1" vertex="1">
+          <mxGeometry x="800" y="680" width="300" height="170" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
